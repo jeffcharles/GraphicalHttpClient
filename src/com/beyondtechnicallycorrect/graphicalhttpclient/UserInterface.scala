@@ -2,9 +2,42 @@ package com.beyondtechnicallycorrect.graphicalhttpclient
 
 import scala.swing._
 import Swing._
+import scala.swing.event.EditDone
+import scala.swing.event.ButtonClicked
 
 object UserInterface extends SimpleSwingApplication {
 
+  val inputColumns = 80
+  val urlTextField = new TextField(columns = inputColumns)
+  val headersTextArea = new TextArea(rows = 3, columns = inputColumns)
+  val requestBodyTextArea = new TextArea(rows = 15, columns = inputColumns)
+  
+  val getButton = new Button("GET")
+  val postButton = new Button("POST")
+  val putButton = new Button("PUT")
+  val deleteButton = new Button("DELETE")
+  val cancelButton = new Button("Cancel") { enabled = false }
+  
+  val responseTextArea = new TextArea(rows = 20, columns = 80) { enabled = false }
+  
+  def valueChanged() {
+    
+    urlTextField.enabled = ViewBinder.url.enabled
+    urlTextField.text = ViewBinder.url.value
+    headersTextArea.enabled = ViewBinder.headers.enabled
+    headersTextArea.text = ViewBinder.headers.value
+    requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
+    requestBodyTextArea.text = ViewBinder.requestBody.value
+    
+    getButton.enabled = ViewBinder.getButton.enabled
+    postButton.enabled = ViewBinder.postButton.enabled
+    putButton.enabled = ViewBinder.putButton.enabled
+    deleteButton.enabled = ViewBinder.deleteButton.enabled
+    cancelButton.enabled = ViewBinder.cancelButton.enabled
+    
+    responseTextArea.text = ViewBinder.response.value
+  }
+  
   def top = new MainFrame {
     title = "Graphical HTTP Client"
     contents = new BoxPanel(Orientation.Vertical) {
@@ -13,6 +46,7 @@ object UserInterface extends SimpleSwingApplication {
         
         var currentRow = 0
         def addRow(labelText: String, field: Component) {
+          
           val c = new Constraints
           c.anchor = GridBagPanel.Anchor.West
           c.fill = GridBagPanel.Fill.Both
@@ -38,10 +72,17 @@ object UserInterface extends SimpleSwingApplication {
           currentRow += 1
         }
         
-        val inputColumns = 80
-        addRow("URL", new TextField(columns = inputColumns))
-        addRow("Headers", new TextArea(rows = 3, columns = inputColumns))
-        addRow("Request body",new TextArea(rows = 15, columns = inputColumns))
+        addRow("URL", urlTextField)
+        addRow("Headers", headersTextArea)
+        addRow("Request body", requestBodyTextArea)
+        listenTo(urlTextField)
+        listenTo(headersTextArea)
+        listenTo(requestBodyTextArea)
+        reactions += {
+          case EditDone(`urlTextField`) => ViewBinder.url.value = urlTextField.text
+          case EditDone(`headersTextArea`) => ViewBinder.headers.value = headersTextArea.text
+          case EditDone(`requestBodyTextArea`) => ViewBinder.requestBody.value = requestBodyTextArea.text
+        }
       }
       contents += VStrut(10)
       contents += new BoxPanel(Orientation.Horizontal) {
@@ -49,26 +90,41 @@ object UserInterface extends SimpleSwingApplication {
         def hSpacer = HStrut(20)
         
         contents += hSpacer
-        contents += new Button("GET")
+        contents += getButton
         contents += hSpacer
-        contents += new Button("POST")
+        contents += postButton
         contents += hSpacer
-        contents += new Button("PUT")
+        contents += putButton
         contents += hSpacer
-        contents += new Button("DELETE")
+        contents += deleteButton
         contents += hSpacer
-        contents += new Button("Cancel") { enabled = false }
+        contents += cancelButton
         contents += hSpacer
+        
+        listenTo(getButton)
+        listenTo(postButton)
+        listenTo(putButton)
+        listenTo(deleteButton)
+        listenTo(cancelButton)
+        
+        reactions += {
+          case ButtonClicked(`getButton`) => ViewBinder.getButton.clicked()
+          case ButtonClicked(`postButton`) => ViewBinder.postButton.clicked()
+          case ButtonClicked(`putButton`) => ViewBinder.putButton.clicked()
+          case ButtonClicked(`deleteButton`) => ViewBinder.deleteButton.clicked()
+          case ButtonClicked(`cancelButton`) => ViewBinder.cancelButton.clicked()
+        }
       }
       contents += VStrut(25)
       contents += new BoxPanel(Orientation.Horizontal) {
         contents += HStrut(10)
         contents += new Label("Response")
         contents += HStrut(10)
-        contents += new TextArea(rows = 20, columns = 80) { enabled = false }
+        contents += responseTextArea
         contents += HStrut(10)
       }
       contents += VStrut(20)
     }
   }
+  valueChanged()
 }
