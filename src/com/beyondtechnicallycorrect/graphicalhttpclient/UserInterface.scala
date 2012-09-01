@@ -23,11 +23,8 @@ object UserInterface extends SimpleSwingApplication {
   def valueChanged() {
     
     urlTextField.enabled = ViewBinder.url.enabled
-    urlTextField.text = ViewBinder.url.value
     headersTextArea.enabled = ViewBinder.headers.enabled
-    headersTextArea.text = ViewBinder.headers.value
     requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
-    requestBodyTextArea.text = ViewBinder.requestBody.value
     
     getButton.enabled = ViewBinder.getButton.enabled
     postButton.enabled = ViewBinder.postButton.enabled

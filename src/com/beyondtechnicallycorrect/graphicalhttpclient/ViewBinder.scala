@@ -34,7 +34,6 @@ class InputField {
   
   def value_=(value: String) {
     _value = value
-    ViewBinder.updateView()
   }
   
   def enabled: Boolean = _enabled
