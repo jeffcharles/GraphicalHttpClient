@@ -3,6 +3,7 @@ import java.net.URL
 import java.net.MalformedURLException
 import java.net.URISyntaxException
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings._
+import com.beyondtechnicallycorrect.graphicalhttpclient.Prelude._
 
 object ViewBinder {
   
@@ -22,7 +23,7 @@ object ViewBinder {
       toUnderlying = input => {
         val headerKeyValuePairs =
           input
-            .split(sys.props("line.separator"))
+            .split(newline)
             .map(_.split(":").map(_.trim))
         val valid = headerKeyValuePairs.forall(_.length == 2)
         if(valid) {
