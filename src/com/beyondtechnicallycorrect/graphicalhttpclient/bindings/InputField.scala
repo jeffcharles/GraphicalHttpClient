@@ -5,14 +5,14 @@ final class InputField[T <: AnyRef] {
   private var _value: String = _
   private var _enabled: Boolean = _
   private var _underlyingValue: T = _
-  private var _toUnderlying: String => (Boolean, T) = _
+  private var _toUnderlying: String => Option[T] = _
   private var _hasValidState: Boolean = true
   private var _signalUpdate: () => Unit = _
   
   def this(
       value: String,
       enabled: Boolean,
-      toUnderlying: String => (Boolean, T),
+      toUnderlying: String => Option[T],
       signalUpdate: () => Unit
     ) {
       
@@ -27,9 +27,10 @@ final class InputField[T <: AnyRef] {
   
   def value_=(value: String) {
     _value = value
-    val conversionPair = _toUnderlying(value)
-    _hasValidState = conversionPair._1
-    _underlyingValue = conversionPair._2
+    _toUnderlying(value) match {
+      case Some(underlyingValue) => _underlyingValue = underlyingValue; _hasValidState = true
+      case None => _hasValidState = false
+    }
   }
   
   def enabled: Boolean = _enabled

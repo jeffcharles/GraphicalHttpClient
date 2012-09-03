@@ -12,10 +12,10 @@ object ViewBinder {
         try {
           val url = new URL(input)
           url.toURI() // performs additional validation
-          (true, url)
+          Some(url)
         } catch {
-          case e: URISyntaxException => (false, null)
-          case e: MalformedURLException => (false, null)
+          case e: URISyntaxException => None
+          case e: MalformedURLException => None
         }
       }
     )
@@ -26,15 +26,14 @@ object ViewBinder {
             .split(newline)
             .map(_.split(":").map(_.trim))
         val valid = headerKeyValuePairs.forall(_.length == 2)
-        if(valid) {
-          (true, headerKeyValuePairs.map(pair => (pair(0), pair(1))))
-        } else {
-          (false, null)
-        }
+        if(valid)
+          Some(headerKeyValuePairs.map(pair => (pair(0), pair(1))))
+        else
+          None
       }
     )
   val requestBody = createInputField[String](
-      toUnderlying = input => (true, input)
+      toUnderlying = input => Some(input)
     )
   
   val getButton = createButton(clicked = () => {})
@@ -49,7 +48,7 @@ object ViewBinder {
     UserInterface.valueChanged()
   }
   
-  private def createInputField[T <: AnyRef](toUnderlying: String => (Boolean, T)): InputField[T] =
+  private def createInputField[T <: AnyRef](toUnderlying: String => Option[T]): InputField[T] =
     new InputField(
         value = "",
         enabled = true,
