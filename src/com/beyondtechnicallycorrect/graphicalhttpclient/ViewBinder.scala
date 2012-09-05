@@ -3,6 +3,7 @@ import java.net.URL
 import java.net.MalformedURLException
 import java.net.URISyntaxException
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings._
+import com.beyondtechnicallycorrect.graphicalhttpclient.connection._
 import com.beyondtechnicallycorrect.graphicalhttpclient.Prelude._
 
 object ViewBinder {
@@ -36,10 +37,10 @@ object ViewBinder {
       toUnderlying = input => Some(input)
     )
   
-  val getButton = createButton(clicked = () => {})
-  val postButton = createButton(clicked = () => {})
-  val putButton = createButton(clicked = () => {})
-  val deleteButton = createButton(clicked = () => {})
+  val getButton = createButton(clicked = launchConnectionFunc(verb = Get))
+  val postButton = createButton(clicked = launchConnectionFunc(verb = Post))
+  val putButton = createButton(clicked = launchConnectionFunc(verb = Put))
+  val deleteButton = createButton(clicked = launchConnectionFunc(verb = Delete))
   val cancelButton = createButton(enabled = false, clicked = () => {})
   
   val response = new OutputField(value = "", signalUpdate = this.updateView)
@@ -62,4 +63,26 @@ object ViewBinder {
         clicked = clicked,
         signalUpdate = this.updateView
       )
+  
+  private def allValid(): Boolean =
+    url.hasValidState && headers.hasValidState && requestBody.hasValidState
+  
+  private def launchConnectionFunc(verb: Verb): () => Unit = () => {
+    if(this.allValid) {
+      val opButtons = Array(getButton, postButton, putButton, deleteButton)
+      opButtons.foreach(_.enabled = false)
+      cancelButton.enabled = true
+      response.value = "Waiting for response..."
+      response.value = Attempt.launchConnection(
+          new Request(
+              verb = verb,
+              url = url.underlyingValue,
+              headers = headers.underlyingValue,
+              body = requestBody.underlyingValue
+            )
+        ).toString
+      opButtons.foreach(_.enabled = true)
+      cancelButton.enabled = false
+    }
+  } 
 }

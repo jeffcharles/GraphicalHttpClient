@@ -21,7 +21,9 @@ final class ButtonBinding {
   }
   
   def clicked() {
-    _clicked()
+    if(_enabled) {
+      _clicked()
+    }
   }
 
 }

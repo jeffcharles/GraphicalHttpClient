@@ -26,6 +26,8 @@ object Attempt {
       case _ => throw new ClassCastException
     }
     connection.setRequestMethod(request.verb.toString)
+    val timeoutInMillis = 15000
+    connection.setReadTimeout(timeoutInMillis)
     request.headers.foreach(
         header => connection.addRequestProperty(header._1, header._2)
       ) 
