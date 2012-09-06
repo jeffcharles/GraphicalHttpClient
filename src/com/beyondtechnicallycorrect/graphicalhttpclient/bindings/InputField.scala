@@ -21,16 +21,14 @@ final class InputField[T <: AnyRef] {
     _enabled = enabled
     _toUnderlying = toUnderlying
     _signalUpdate = signalUpdate
+    evaluateToUnderlying(_value)
   }
   
   def value: String = _value
   
   def value_=(value: String) {
     _value = value
-    _toUnderlying(value) match {
-      case Some(underlyingValue) => _underlyingValue = underlyingValue; _hasValidState = true
-      case None => _hasValidState = false
-    }
+    evaluateToUnderlying(_value)
   }
   
   def enabled: Boolean = _enabled
@@ -43,4 +41,11 @@ final class InputField[T <: AnyRef] {
   def underlyingValue: T = _underlyingValue
   
   def hasValidState: Boolean = _hasValidState
+  
+  private def evaluateToUnderlying(value: String) {
+    _toUnderlying(_value) match {
+      case Some(underlyingValue) => _underlyingValue = underlyingValue; _hasValidState = true
+      case None => _hasValidState = false
+    }
+  }
 }

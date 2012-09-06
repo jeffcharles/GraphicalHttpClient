@@ -8,6 +8,9 @@ import com.beyondtechnicallycorrect.graphicalhttpclient.Prelude._
 
 object ViewBinder {
   
+  val attempter = new Attempt
+  attempter.start
+  
   val url = createInputField[URL](
       toUnderlying = input => {
         try {
@@ -22,15 +25,18 @@ object ViewBinder {
     )
   val headers = createInputField[Iterable[(String, String)]](
       toUnderlying = input => {
-        val headerKeyValuePairs =
-          input
+        if(input == "") {
+          Some(Nil)
+        } else {
+          val headerKeyValuePairs = input
             .split(newline)
             .map(_.split(":").map(_.trim))
-        val valid = headerKeyValuePairs.forall(_.length == 2)
-        if(valid)
-          Some(headerKeyValuePairs.map(pair => (pair(0), pair(1))))
-        else
-          None
+          val valid = headerKeyValuePairs.forall(_.length == 2)
+          if(valid)
+            Some(headerKeyValuePairs.map(pair => (pair(0), pair(1))))
+          else
+            None
+        }
       }
     )
   val requestBody = createInputField[String](
@@ -73,14 +79,16 @@ object ViewBinder {
       opButtons.foreach(_.enabled = false)
       cancelButton.enabled = true
       response.value = "Waiting for response..."
-      response.value = Attempt.launchConnection(
-          new Request(
-              verb = verb,
-              url = url.underlyingValue,
-              headers = headers.underlyingValue,
-              body = requestBody.underlyingValue
-            )
-        ).toString
+      val futureResponse = attempter !! new Request(
+          verb = verb,
+          url = url.underlyingValue,
+          headers = headers.underlyingValue,
+          body = requestBody.underlyingValue
+        )
+      response.value = futureResponse() match {
+        case Some(resp) => resp.toString
+        case None => "Some sort of error occurred"
+      }
       opButtons.foreach(_.enabled = true)
       cancelButton.enabled = false
     }
