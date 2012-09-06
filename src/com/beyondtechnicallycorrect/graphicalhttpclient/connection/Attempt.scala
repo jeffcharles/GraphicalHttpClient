@@ -5,6 +5,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import scala.io.Source
 import scala.actors.Actor
+import scala.testing.SUnit.Assert
 
 class Attempt extends Actor {
   
@@ -51,8 +52,12 @@ class Attempt extends Actor {
   
   private def extractResponse(connection: HttpURLConnection): Response = {
     
-    val statusCode = connection.getResponseCode
     val headers = connection.getHeaderFields.map(header => (header._1, header._2(0)))
+    val statusCode = headers.get(null) match {
+      case Some(sc) => sc
+      case None => ""
+    }
+    headers -= null // remove since this is now duplicate data being stored in statusCode
     val contentType = headers.get("Content-Type") match {
       case Some(ct) => ct
       case None => ""

@@ -2,7 +2,7 @@ package com.beyondtechnicallycorrect.graphicalhttpclient.connection
 import com.beyondtechnicallycorrect.graphicalhttpclient.Prelude._
 
 final class Response (
-  val statusCode: Int,
+  val statusCode: String,
   val headers: Iterable[(String, String)],
   val body: String
 ) {
