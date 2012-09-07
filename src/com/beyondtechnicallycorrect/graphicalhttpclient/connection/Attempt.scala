@@ -7,17 +7,9 @@ import scala.io.Source
 import scala.actors.Actor
 import scala.testing.SUnit.Assert
 
-class Attempt extends Actor {
-  
-  def act() {
-    loop {
-      react {
-        case request: Request => reply(launchConnection(request))
-      }
-    }
-  }
+object Attempt {
 
-  private def launchConnection(request: Request): Option[Response] = {
+  def launchConnection(request: Request): Option[Response] = {
     
     val connection = setUpConnection(request) 
     try {

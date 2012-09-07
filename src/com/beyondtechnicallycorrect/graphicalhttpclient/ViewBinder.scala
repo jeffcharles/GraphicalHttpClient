@@ -2,14 +2,12 @@ package com.beyondtechnicallycorrect.graphicalhttpclient
 import java.net.URL
 import java.net.MalformedURLException
 import java.net.URISyntaxException
+import scala.actors.Futures._
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings._
 import com.beyondtechnicallycorrect.graphicalhttpclient.connection._
 import com.beyondtechnicallycorrect.graphicalhttpclient.Prelude._
 
 object ViewBinder {
-  
-  val attempter = new Attempt
-  attempter.start
   
   val url = createInputField[URL](
       toUnderlying = input => {
@@ -79,18 +77,20 @@ object ViewBinder {
       opButtons.foreach(_.enabled = false)
       cancelButton.enabled = true
       response.value = "Waiting for response..."
-      val futureResponse = attempter !! new Request(
-          verb = verb,
-          url = url.underlyingValue,
-          headers = headers.underlyingValue,
-          body = requestBody.underlyingValue
+      val futureResponse = future { Attempt.launchConnection(
+          new Request(
+              verb = verb,
+              url = url.underlyingValue,
+              headers = headers.underlyingValue,
+              body = requestBody.underlyingValue
+            )
         )
-      response.value = futureResponse() match {
-        case Some(resp) => resp.toString
-        case None => "Some sort of error occurred"
       }
-      opButtons.foreach(_.enabled = true)
-      cancelButton.enabled = false
+      val reenableOps = () => { opButtons.foreach(_.enabled = true); cancelButton.enabled = false }
+      futureResponse foreach (_ match {
+        case Some(resp) => response.value = resp.toString; reenableOps()
+        case None => response.value = "Some sort of error occurred"; reenableOps()
+      })
     }
   } 
 }
