@@ -87,10 +87,10 @@ object ViewBinder {
         )
       }
       val reenableOps = () => { opButtons.foreach(_.enabled = true); cancelButton.enabled = false }
-      futureResponse foreach (_ match {
+      futureResponse respond {
         case Some(resp) => response.value = resp.toString; reenableOps()
         case None => response.value = "Some sort of error occurred"; reenableOps()
-      })
+      }
     }
   } 
 }
