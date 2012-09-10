@@ -37,6 +37,7 @@ object UserInterface extends SimpleSwingApplication {
   
   def top = new MainFrame {
     title = "Graphical HTTP Client"
+    resizable = false
     contents = new BoxPanel(Orientation.Vertical) {
       contents += VStrut(20)
       contents += new GridBagPanel {
