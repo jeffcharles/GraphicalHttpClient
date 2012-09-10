@@ -113,11 +113,13 @@ object UserInterface extends SimpleSwingApplication {
         }
       }
       contents += VStrut(25)
-      contents += new BoxPanel(Orientation.Horizontal) {
+      contents += new BoxPanel(Orientation.Horizontal) {        
         contents += HStrut(10)
         contents += new Label("Response")
         contents += HStrut(10)
-        contents += responseTextArea
+        contents += new ScrollPane {
+          contents = responseTextArea
+        }
         contents += HStrut(10)
       }
       contents += VStrut(20)
