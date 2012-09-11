@@ -1,6 +1,6 @@
 package com.beyondtechnicallycorrect.graphicalhttpclient.bindings
 
-final class ButtonBinding {
+final class ButtonBinding extends Enablable {
   
   private var _enabled: Boolean = _
   private var _clicked: () => Unit = _

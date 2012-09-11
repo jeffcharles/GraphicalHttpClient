@@ -73,8 +73,8 @@ object ViewBinder {
   
   private def launchConnectionFunc(verb: Verb): () => Unit = () => {
     if(this.allValid) {
-      val opButtons = Array(getButton, postButton, putButton, deleteButton)
-      opButtons.foreach(_.enabled = false)
+      val inputs = Array(url, headers, requestBody, getButton, postButton, putButton, deleteButton)
+      inputs.foreach(_.enabled = false)
       cancelButton.enabled = true
       response.value = "Waiting for response..."
       val futureResponse = future { Attempt.launchConnection(
@@ -86,10 +86,14 @@ object ViewBinder {
             )
         )
       }
-      val reenableOps = () => { opButtons.foreach(_.enabled = true); cancelButton.enabled = false }
+      val displayMsgAndReenable = (msg: String) => {
+        response.value = msg
+        inputs.foreach(_.enabled = true)
+        cancelButton.enabled = false
+      }
       futureResponse respond {
-        case Some(resp) => response.value = resp.toString; reenableOps()
-        case None => response.value = "Some sort of error occurred"; reenableOps()
+        case Some(resp) => displayMsgAndReenable(resp.toString)
+        case None => displayMsgAndReenable("Some sort of error occurred")
       }
     }
   } 

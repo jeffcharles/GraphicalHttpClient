@@ -1,6 +1,6 @@
 package com.beyondtechnicallycorrect.graphicalhttpclient.bindings
 
-final class InputField[T <: AnyRef] {
+final class InputField[T <: AnyRef] extends Enablable {
   
   private var _value: String = _
   private var _enabled: Boolean = _
