@@ -61,8 +61,8 @@ object Attempt {
     
     usingStream(connection.getInputStream) { s =>
       val responseBody = encoding match {
-        case Some(enc) => Source.fromInputStream(s)(io.Codec(enc)).mkString
-        case None => Source.fromInputStream(s)(io.Codec("ISO-8859-1")).mkString
+        case Some(enc) => Source.fromInputStream(s, enc).mkString
+        case None => Source.fromInputStream(s, "ISO-8859-1").mkString
       }
       new Response(statusCode, headers, responseBody)
     }
