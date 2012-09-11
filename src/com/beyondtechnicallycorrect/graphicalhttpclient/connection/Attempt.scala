@@ -5,7 +5,6 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import scala.io.Source
 import scala.actors.Actor
-import scala.testing.SUnit.Assert
 
 object Attempt {
 
@@ -54,11 +53,11 @@ object Attempt {
       case Some(ct) => ct
       case None => ""
     }
-    val encoding =
-      if(contentType contains "text")
-        ((contentType split ";")(1) split "=")(1)
-      else
-        ""
+    val contentTypePattern = """text.*;\s*charset=([^\s]+)""".r
+    val encoding = contentType match {
+      case contentTypePattern(enc) => enc
+      case _ => ""
+    }
     
     usingStream(connection.getInputStream) { s =>
       val responseBody = Source.fromInputStream(s)(io.Codec(encoding)).mkString
