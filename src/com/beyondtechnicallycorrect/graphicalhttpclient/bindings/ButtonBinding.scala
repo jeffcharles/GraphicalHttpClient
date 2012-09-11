@@ -1,12 +1,12 @@
 package com.beyondtechnicallycorrect.graphicalhttpclient.bindings
 
-final class ButtonBinding extends Enablable {
+final class ButtonBinding extends Updatable with Enablable {
   
   private var _enabled: Boolean = _
   private var _clicked: () => Unit = _
-  private var _signalUpdate: () => Unit = _
+  private var _signalUpdate: Updatable => Unit = _
   
-  def this(enabled: Boolean, clicked: () => Unit, signalUpdate: () => Unit) {
+  def this(enabled: Boolean, clicked: () => Unit, signalUpdate: Updatable => Unit) {
     this()
     _enabled = enabled
     _clicked = clicked
@@ -17,7 +17,7 @@ final class ButtonBinding extends Enablable {
   
   def enabled_=(enabled: Boolean) {
     _enabled = enabled
-    _signalUpdate()
+    _signalUpdate(this)
   }
   
   def clicked() {

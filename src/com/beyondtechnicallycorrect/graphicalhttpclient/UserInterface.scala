@@ -4,6 +4,7 @@ import scala.swing._
 import Swing._
 import scala.swing.event.EditDone
 import scala.swing.event.ButtonClicked
+import com.beyondtechnicallycorrect.graphicalhttpclient.bindings.Updatable
 
 object UserInterface extends SimpleSwingApplication {
 
@@ -20,19 +21,20 @@ object UserInterface extends SimpleSwingApplication {
   
   val responseTextArea = new TextArea(rows = 20, columns = 80) { enabled = false }
   
-  def valueChanged() {
-    
-    urlTextField.enabled = ViewBinder.url.enabled
-    headersTextArea.enabled = ViewBinder.headers.enabled
-    requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
-    
-    getButton.enabled = ViewBinder.getButton.enabled
-    postButton.enabled = ViewBinder.postButton.enabled
-    putButton.enabled = ViewBinder.putButton.enabled
-    deleteButton.enabled = ViewBinder.deleteButton.enabled
-    cancelButton.enabled = ViewBinder.cancelButton.enabled
-    
-    responseTextArea.text = ViewBinder.response.value
+  def valueChanged(inputChanged: Updatable) {
+    inputChanged match {
+      case ViewBinder.url => urlTextField.enabled = ViewBinder.url.enabled
+      case ViewBinder.headers => headersTextArea.enabled = ViewBinder.headers.enabled
+      case ViewBinder.requestBody => requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
+      
+      case ViewBinder.getButton => getButton.enabled = ViewBinder.getButton.enabled
+      case ViewBinder.postButton => postButton.enabled = ViewBinder.postButton.enabled
+      case ViewBinder.putButton => putButton.enabled = ViewBinder.putButton.enabled
+      case ViewBinder.deleteButton => deleteButton.enabled = ViewBinder.deleteButton.enabled
+      case ViewBinder.cancelButton => cancelButton.enabled = ViewBinder.cancelButton.enabled
+      
+      case ViewBinder.response => responseTextArea.text = ViewBinder.response.value
+    }
   }
   
   def top = new MainFrame {
@@ -126,5 +128,4 @@ object UserInterface extends SimpleSwingApplication {
       contents += VStrut(20)
     }
   }
-  valueChanged()
 }

@@ -1,19 +1,19 @@
 package com.beyondtechnicallycorrect.graphicalhttpclient.bindings
 
-final class InputField[T <: AnyRef] extends Enablable {
+final class InputField[T <: AnyRef] extends Updatable with Enablable {
   
   private var _value: String = _
   private var _enabled: Boolean = _
   private var _underlyingValue: T = _
   private var _toUnderlying: String => Option[T] = _
   private var _hasValidState: Boolean = true
-  private var _signalUpdate: () => Unit = _
+  private var _signalUpdate: Updatable => Unit = _
   
   def this(
       value: String,
       enabled: Boolean,
       toUnderlying: String => Option[T],
-      signalUpdate: () => Unit
+      signalUpdate: Updatable => Unit
     ) {
       
     this()
@@ -35,7 +35,7 @@ final class InputField[T <: AnyRef] extends Enablable {
   
   def enabled_=(enabled: Boolean) {
     _enabled = enabled
-    _signalUpdate()
+    _signalUpdate(this)
   }
   
   def underlyingValue: T = _underlyingValue

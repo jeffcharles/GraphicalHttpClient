@@ -49,8 +49,8 @@ object ViewBinder {
   
   val response = new OutputField(value = "", signalUpdate = this.updateView)
   
-  private def updateView() {
-    UserInterface.valueChanged()
+  private def updateView(updatedInput: Updatable) {
+    UserInterface.valueChanged(updatedInput)
   }
   
   private def createInputField[T <: AnyRef](toUnderlying: String => Option[T]): InputField[T] =
