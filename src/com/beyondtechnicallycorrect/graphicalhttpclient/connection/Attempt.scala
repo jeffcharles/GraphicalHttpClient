@@ -55,12 +55,15 @@ object Attempt {
     }
     val contentTypePattern = """text.*;\s*charset=([^\s]+)""".r
     val encoding = contentType match {
-      case contentTypePattern(enc) => enc
-      case _ => ""
+      case contentTypePattern(enc) => Some(enc)
+      case _ => None
     }
     
     usingStream(connection.getInputStream) { s =>
-      val responseBody = Source.fromInputStream(s)(io.Codec(encoding)).mkString
+      val responseBody = encoding match {
+        case Some(enc) => Source.fromInputStream(s)(io.Codec(enc)).mkString
+        case None => Source.fromInputStream(s)(io.Codec("ISO-8859-1")).mkString
+      }
       new Response(statusCode, headers, responseBody)
     }
   }
