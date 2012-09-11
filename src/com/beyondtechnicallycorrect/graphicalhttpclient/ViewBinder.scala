@@ -41,11 +41,11 @@ object ViewBinder {
       toUnderlying = input => Some(input)
     )
   
-  val getButton = createButton(clicked = launchConnectionFunc(verb = Get))
-  val postButton = createButton(clicked = launchConnectionFunc(verb = Post))
-  val putButton = createButton(clicked = launchConnectionFunc(verb = Put))
-  val deleteButton = createButton(clicked = launchConnectionFunc(verb = Delete))
-  val cancelButton = createButton(enabled = false, clicked = () => {})
+  val get = createButton(clicked = launchConnectionFunc(verb = Get))
+  val post = createButton(clicked = launchConnectionFunc(verb = Post))
+  val put = createButton(clicked = launchConnectionFunc(verb = Put))
+  val delete = createButton(clicked = launchConnectionFunc(verb = Delete))
+  val cancel = createButton(enabled = false, clicked = () => {})
   
   val response = new OutputField(value = "", signalUpdate = this.updateView)
   
@@ -73,9 +73,9 @@ object ViewBinder {
   
   private def launchConnectionFunc(verb: Verb): () => Unit = () => {
     if(this.allValid) {
-      val inputs = Array(url, headers, requestBody, getButton, postButton, putButton, deleteButton)
+      val inputs = Array(url, headers, requestBody, get, post, put, delete)
       inputs.foreach(_.enabled = false)
-      cancelButton.enabled = true
+      cancel.enabled = true
       response.value = "Waiting for response..."
       val futureResponse = future { Attempt.launchConnection(
           new Request(
@@ -89,7 +89,7 @@ object ViewBinder {
       val displayMsgAndReenable = (msg: String) => {
         response.value = msg
         inputs.foreach(_.enabled = true)
-        cancelButton.enabled = false
+        cancel.enabled = false
       }
       futureResponse respond {
         case Some(resp) => displayMsgAndReenable(resp.toString)

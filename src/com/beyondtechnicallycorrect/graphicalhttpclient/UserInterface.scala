@@ -27,11 +27,11 @@ object UserInterface extends SimpleSwingApplication {
       case ViewBinder.headers => headersTextArea.enabled = ViewBinder.headers.enabled
       case ViewBinder.requestBody => requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
       
-      case ViewBinder.getButton => getButton.enabled = ViewBinder.getButton.enabled
-      case ViewBinder.postButton => postButton.enabled = ViewBinder.postButton.enabled
-      case ViewBinder.putButton => putButton.enabled = ViewBinder.putButton.enabled
-      case ViewBinder.deleteButton => deleteButton.enabled = ViewBinder.deleteButton.enabled
-      case ViewBinder.cancelButton => cancelButton.enabled = ViewBinder.cancelButton.enabled
+      case ViewBinder.get => getButton.enabled = ViewBinder.get.enabled
+      case ViewBinder.post => postButton.enabled = ViewBinder.post.enabled
+      case ViewBinder.put => putButton.enabled = ViewBinder.put.enabled
+      case ViewBinder.delete => deleteButton.enabled = ViewBinder.delete.enabled
+      case ViewBinder.cancel => cancelButton.enabled = ViewBinder.cancel.enabled
       
       case ViewBinder.response => responseTextArea.text = ViewBinder.response.value
     }
@@ -108,11 +108,11 @@ object UserInterface extends SimpleSwingApplication {
         listenTo(cancelButton)
         
         reactions += {
-          case ButtonClicked(`getButton`) => ViewBinder.getButton.clicked()
-          case ButtonClicked(`postButton`) => ViewBinder.postButton.clicked()
-          case ButtonClicked(`putButton`) => ViewBinder.putButton.clicked()
-          case ButtonClicked(`deleteButton`) => ViewBinder.deleteButton.clicked()
-          case ButtonClicked(`cancelButton`) => ViewBinder.cancelButton.clicked()
+          case ButtonClicked(`getButton`) => ViewBinder.get.clicked()
+          case ButtonClicked(`postButton`) => ViewBinder.post.clicked()
+          case ButtonClicked(`putButton`) => ViewBinder.put.clicked()
+          case ButtonClicked(`deleteButton`) => ViewBinder.delete.clicked()
+          case ButtonClicked(`cancelButton`) => ViewBinder.cancel.clicked()
         }
       }
       contents += VStrut(25)
