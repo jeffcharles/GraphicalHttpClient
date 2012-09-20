@@ -13,6 +13,8 @@ object UserInterface extends SimpleSwingApplication {
   val headersTextArea = new TextArea(rows = 3, columns = inputColumns)
   val requestBodyTextArea = new TextArea(rows = 15, columns = inputColumns)
   
+  val validationTextArea = new TextArea(rows = 3, columns = inputColumns) { enabled = false}
+  
   val getButton = new Button("GET")
   val postButton = new Button("POST")
   val putButton = new Button("PUT")
@@ -26,6 +28,8 @@ object UserInterface extends SimpleSwingApplication {
       case ViewBinder.url => urlTextField.enabled = ViewBinder.url.enabled
       case ViewBinder.headers => headersTextArea.enabled = ViewBinder.headers.enabled
       case ViewBinder.requestBody => requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
+      
+      case ViewBinder.validationMessages => validationTextArea.text = ViewBinder.validationMessages.value
       
       case ViewBinder.get => getButton.enabled = ViewBinder.get.enabled
       case ViewBinder.post => postButton.enabled = ViewBinder.post.enabled
@@ -75,6 +79,7 @@ object UserInterface extends SimpleSwingApplication {
         addRow("URL", urlTextField)
         addRow("Headers", headersTextArea)
         addRow("Request body", requestBodyTextArea)
+        addRow("Validation messages", validationTextArea)
         listenTo(urlTextField)
         listenTo(headersTextArea)
         listenTo(requestBodyTextArea)
