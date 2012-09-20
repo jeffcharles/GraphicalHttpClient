@@ -42,8 +42,6 @@ object ViewBinder {
       toUnderlying = input => Some(input)
     )
   
-  var lastRequestBodyUpdate = new Date()
-  
   val get = createButton(clicked = launchConnectionFunc(verb = Get))
   val post = createButton(clicked = launchConnectionFunc(verb = Post))
   val put = createButton(clicked = launchConnectionFunc(verb = Put))
@@ -51,6 +49,8 @@ object ViewBinder {
   val cancel = createButton(enabled = false, clicked = () => reenable)
   
   val response = new OutputField(value = "", signalUpdate = this.updateView)
+  
+  var lastResponseBodyUpdate = new Date()
   
   val inputs = Array(url, headers, requestBody, get, post, put, delete)
   
@@ -100,8 +100,8 @@ object ViewBinder {
         )
       }
       val displayMsgAndReenable = (timeReqLaunched: Date, msg: String) => {
-        if(timeReqLaunched after lastRequestBodyUpdate) {
-          lastRequestBodyUpdate = timeReqLaunched
+        if(timeReqLaunched after lastResponseBodyUpdate) {
+          lastResponseBodyUpdate = timeReqLaunched
           response.value = msg
           reenable()
         }
