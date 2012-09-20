@@ -6,6 +6,7 @@ import scala.actors.Futures._
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings._
 import com.beyondtechnicallycorrect.graphicalhttpclient.connection._
 import com.beyondtechnicallycorrect.graphicalhttpclient.Prelude._
+import java.util.Date
 
 object ViewBinder {
   
@@ -41,13 +42,17 @@ object ViewBinder {
       toUnderlying = input => Some(input)
     )
   
+  var lastRequestBodyUpdate = new Date()
+  
   val get = createButton(clicked = launchConnectionFunc(verb = Get))
   val post = createButton(clicked = launchConnectionFunc(verb = Post))
   val put = createButton(clicked = launchConnectionFunc(verb = Put))
   val delete = createButton(clicked = launchConnectionFunc(verb = Delete))
-  val cancel = createButton(enabled = false, clicked = () => {})
+  val cancel = createButton(enabled = false, clicked = () => reenable)
   
   val response = new OutputField(value = "", signalUpdate = this.updateView)
+  
+  val inputs = Array(url, headers, requestBody, get, post, put, delete)
   
   private def updateView(updatedInput: Updatable) {
     UserInterface.valueChanged(updatedInput)
@@ -71,29 +76,39 @@ object ViewBinder {
   private def allValid(): Boolean =
     url.hasValidState && headers.hasValidState && requestBody.hasValidState
   
+  private def reenable() {
+    inputs.foreach(_.enabled = true)
+    cancel.enabled = false
+  }
+  
   private def launchConnectionFunc(verb: Verb): () => Unit = () => {
     if(this.allValid) {
-      val inputs = Array(url, headers, requestBody, get, post, put, delete)
       inputs.foreach(_.enabled = false)
       cancel.enabled = true
       response.value = "Waiting for response..."
-      val futureResponse = future { Attempt.launchConnection(
-          new Request(
-              verb = verb,
-              url = url.underlyingValue,
-              headers = headers.underlyingValue,
-              body = requestBody.underlyingValue
+      val futureResponse = future {
+        (
+          new Date(),
+          Attempt.launchConnection(
+              new Request(
+                  verb = verb,
+                  url = url.underlyingValue,
+                  headers = headers.underlyingValue,
+                  body = requestBody.underlyingValue
+                )
             )
         )
       }
-      val displayMsgAndReenable = (msg: String) => {
-        response.value = msg
-        inputs.foreach(_.enabled = true)
-        cancel.enabled = false
+      val displayMsgAndReenable = (timeReqLaunched: Date, msg: String) => {
+        if(timeReqLaunched after lastRequestBodyUpdate) {
+          lastRequestBodyUpdate = timeReqLaunched
+          response.value = msg
+          reenable()
+        }
       }
       futureResponse respond {
-        case Some(resp) => displayMsgAndReenable(resp.toString)
-        case None => displayMsgAndReenable("Some sort of error occurred")
+        case (d: Date, Some(resp)) => displayMsgAndReenable(d, resp.toString)
+        case (d: Date, None) => displayMsgAndReenable(d, "Some sort of error occurred")
       }
     }
   } 
