@@ -13,11 +13,11 @@ object Attempt {
     val connection = setUpConnection(request) 
     try {
       connection.connect()
+      Some(extractResponse(connection))
     } catch {
       case e: SocketTimeoutException => return None
       case e: IOException => return None
     }
-    Some(extractResponse(connection))
   }
   
   private def setUpConnection(request: Request): HttpURLConnection = {
