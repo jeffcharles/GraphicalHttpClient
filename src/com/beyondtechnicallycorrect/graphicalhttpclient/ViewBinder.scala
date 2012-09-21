@@ -42,8 +42,6 @@ object ViewBinder {
       toUnderlying = input => Some(input)
     )
   
-  val validationMessages = new OutputField(value = "", signalUpdate = this.updateView)
-    
   val get = createButton(clicked = launchConnectionFunc(verb = Get))
   val post = createButton(clicked = launchConnectionFunc(verb = Post))
   val put = createButton(clicked = launchConnectionFunc(verb = Put))
