@@ -5,6 +5,8 @@ import Swing._
 import scala.swing.event.EditDone
 import scala.swing.event.ButtonClicked
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings.Updatable
+import java.awt.Color
+import com.beyondtechnicallycorrect.graphicalhttpclient.bindings.InputField
 
 object UserInterface extends SimpleSwingApplication {
 
@@ -22,10 +24,16 @@ object UserInterface extends SimpleSwingApplication {
   val responseTextArea = new TextArea(rows = 20, columns = 80) { enabled = false }
   
   def valueChanged(inputChanged: Updatable) {
+      
+    def updateField[T <: AnyRef](component: TextComponent, field: InputField[T]) {
+      component.enabled = field.enabled
+      component.background = if(field.hasValidState) Color.WHITE else Color.RED
+    }
+    
     inputChanged match {
-      case ViewBinder.url => urlTextField.enabled = ViewBinder.url.enabled
-      case ViewBinder.headers => headersTextArea.enabled = ViewBinder.headers.enabled
-      case ViewBinder.requestBody => requestBodyTextArea.enabled = ViewBinder.requestBody.enabled
+      case ViewBinder.url => updateField(urlTextField, ViewBinder.url)
+      case ViewBinder.headers => updateField(headersTextArea, ViewBinder.headers)
+      case ViewBinder.requestBody => updateField(requestBodyTextArea, ViewBinder.requestBody)
       
       case ViewBinder.get => getButton.enabled = ViewBinder.get.enabled
       case ViewBinder.post => postButton.enabled = ViewBinder.post.enabled
