@@ -34,6 +34,7 @@ object Attempt {
       )
     val requestHasBody = request.body != ""
     if(requestHasBody) {
+      connection.setDoOutput(true)
       usingStream(connection.getOutputStream) {
         _.write(request.body.getBytes("UTF-8"))
       }
