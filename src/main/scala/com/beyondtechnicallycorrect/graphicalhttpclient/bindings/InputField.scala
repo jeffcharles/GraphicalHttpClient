@@ -29,6 +29,7 @@ final class InputField[T <: AnyRef] extends Updatable with Enablable {
   def value_=(value: String) {
     _value = value
     evaluateToUnderlying(_value)
+    _signalUpdate(this)
   }
   
   def enabled: Boolean = _enabled
