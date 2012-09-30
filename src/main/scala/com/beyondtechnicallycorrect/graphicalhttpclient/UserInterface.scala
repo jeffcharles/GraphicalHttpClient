@@ -4,6 +4,7 @@ import scala.swing._
 import Swing._
 import scala.swing.event.EditDone
 import scala.swing.event.ButtonClicked
+import scala.swing.event.FocusLost
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings.Updatable
 import java.awt.Color
 import com.beyondtechnicallycorrect.graphicalhttpclient.bindings.InputField
@@ -88,8 +89,8 @@ object UserInterface extends SimpleSwingApplication {
         listenTo(requestBodyTextArea)
         reactions += {
           case EditDone(`urlTextField`) => ViewBinder.url.value = urlTextField.text
-          case EditDone(`headersTextArea`) => ViewBinder.headers.value = headersTextArea.text
-          case EditDone(`requestBodyTextArea`) => ViewBinder.requestBody.value = requestBodyTextArea.text
+          case FocusLost(`headersTextArea`, _, _) => ViewBinder.headers.value = headersTextArea.text
+          case FocusLost(`requestBodyTextArea`, _, _) => ViewBinder.requestBody.value = requestBodyTextArea.text
         }
       }
       contents += VStrut(10)
